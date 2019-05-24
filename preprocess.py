@@ -40,6 +40,10 @@ def image_preview(np_array):
 
 
 def image_preview_fit_its_scale(np_array):
+    """
+    Preview image with corresponding scale
+    :param np_array:
+    """
     plt.imshow(np_array, cmap="gray")
     plt.clim(np_array.min(), np_array.max())
     plt.colorbar()
@@ -54,6 +58,10 @@ def get_image_shape(np_array):
 
 
 def get_ISBI_2012_dataset():
+    """
+    Loading from ISBI dataset and convert to two image array (raw_data & ground_truth)
+    :return: np_array, np_array
+    """
     x_image_array = load_from_multi_page_tiff(path_to_image=DATA_PATH + 'ISBI2012/train-volume.tif')
     y_image_array = load_from_multi_page_tiff(path_to_image=DATA_PATH + 'ISBI2012/train-labels.tif')
     get_image_shape(x_image_array)

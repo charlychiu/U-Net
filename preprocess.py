@@ -119,9 +119,55 @@ def parsing_cell_tracking_data(ground_truth_path):
     return np.stack(x_image_array), np.stack(y_image_array)
 
 
+def overlap_tile_processing(img_array, expend_px_width, expend_px_height):
+    """
+    Following U-Net paper 'Overlap-tile strategy' processing image
+    :param img_array: input image array
+    :param expend_px_width: per edge expend width ex. 512*512 => 512*(512+(92*2))
+    :param expend_px_height: per edge expend height ex. 512*512 => (512+(92*2))*512
+    :return: processed image array
+    """
+    import cv2
+
+    def flip_horizontally(np_array):
+        return cv2.flip(np_array, 1)
+
+    def flip_vertically(np_array):
+        return cv2.flip(np_array, 0)
+
+    original_height = img_array.shape[0]
+    original_width = img_array.shape[1]
+
+    # Expand width first
+    # left:
+    left_result = flip_horizontally(img_array[0:0 + original_height, 0:0 + expend_px_width])
+    # right:
+    right_result = flip_horizontally(
+        img_array[0:0 + original_height, original_width - expend_px_width: original_width])
+
+    result_img = cv2.hconcat([left_result, img_array])
+    result_img = cv2.hconcat([result_img, right_result])
+
+    result_img_height = result_img.shape[0]
+    result_img_width = result_img.shape[1]
+
+    # Expand height
+    top_result = flip_vertically(result_img[0:0 + expend_px_height, 0:0 + result_img_width])
+    bottom_result = flip_vertically(
+        result_img[result_img_height - expend_px_height: result_img_height, 0:0 + result_img_width])
+
+    result_img = cv2.vconcat([top_result, result_img])
+    result_img = cv2.vconcat([result_img, bottom_result])
+
+    return result_img
+
+
 if __name__ == '__main__':
     X, Y = get_ISBI_2012_dataset()
     X1, Y1 = get_DIC_C2DH_HeLa()
     X2, Y2 = get_PhC_C2DH_U373()
     image_preview_fit_its_scale(X[0])
-    image_preview_fit_its_scale(Y[0])
+    # image_preview_fit_its_scale(Y[0])
+    image_preview_fit_its_scale(overlap_tile_processing(X[0], 92, 92))
+    # import cv2
+    # cv2.imwrite('test.png', X[0])

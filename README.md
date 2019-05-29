@@ -11,10 +11,10 @@ Keras implementation of U-Net, with simple annotation
 > Paper URL : https://arxiv.org/abs/1505.04597
 
 ## Dataset
-[ISBI Challenge: Segmentation of neuronal structures in EM stacks](http://brainiac2.mit.edu/isbi_challenge/home)    
-[Cell Tracking Challenge](http://celltrackingchallenge.net)  
-    DIC-C2DH-HeLa (HeLa cells on a flat glass)  
-    PhC-C2DH-U373 (Glioblastoma-astrocytoma U373 cells on a polyacrylamide substrate)
+1. [ISBI Challenge: Segmentation of neuronal structures in EM stacks](http://brainiac2.mit.edu/isbi_challenge/home)    
+2. [Cell Tracking Challenge](http://celltrackingchallenge.net)  
+ a. DIC-C2DH-HeLa (HeLa cells on a flat glass)  
+ b. PhC-C2DH-U373 (Glioblastoma-astrocytoma U373 cells on a polyacrylamide substrate)
     
 ## Preprocessed
 

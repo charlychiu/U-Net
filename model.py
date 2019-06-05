@@ -83,7 +83,7 @@ class Unet():
         conv9_1 = Conv2D(64, (3, 3), activation='relu', padding='valid', name='conv9_1')(up9)
         conv9_2 = Conv2D(64, (3, 3), activation='relu', padding='valid', name='conv9_2')(conv9_1)
 
-        conv10 = Conv2D(1, (1, 1), activation='sigmoid', name='conv10')(conv9_2)
+        conv10 = Conv2D(2, (1, 1), activation='sigmoid', name='conv10')(conv9_2)
 
         model = Model(inputs=[inputs], outputs=[conv10])
         return model

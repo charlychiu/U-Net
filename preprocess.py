@@ -161,13 +161,51 @@ def overlap_tile_processing(img_array, expend_px_width, expend_px_height):
 
     return result_img
 
-
 if __name__ == '__main__':
     X, Y = get_ISBI_2012_dataset()
-    X1, Y1 = get_DIC_C2DH_HeLa()
-    X2, Y2 = get_PhC_C2DH_U373()
-    image_preview_fit_its_scale(X[0])
-    # image_preview_fit_its_scale(Y[0])
-    image_preview_fit_its_scale(overlap_tile_processing(X[0], 92, 92))
-    # import cv2
-    # cv2.imwrite('test.png', X[0])
+    from PIL import Image
+    for idx, each_picture in enumerate(X):
+        img = Image.fromarray(overlap_tile_processing(each_picture, 92, 92))
+        img.save('./data/data1/overlap-tile-x/' + str(idx) + ".png")
+
+    for idx, each_picture in enumerate(Y):
+        img = Image.fromarray(overlap_tile_processing(each_picture, 92, 92))
+        img.save('./data/data1/overlap-tile-y/' + str(idx) + ".png")
+
+    # X1, Y1 = get_DIC_C2DH_HeLa()
+    # save_npy_array_to_picture(X1, './data/data2/x/')
+    # save_npy_array_to_picture(Y1, './data/data2/y/')
+    # X2, Y2 = get_PhC_C2DH_U373()
+    # save_npy_array_to_picture(X2, './data/data3/x/')
+    # save_npy_array_to_picture(Y2, './data/data3/y/')
+
+    # image_preview_fit_its_scale(X[0])
+    # image_preview_fit_its_scale(overlap_tile_processing(X[0], 92, 92))
+
+    # from PIL import Image
+    #
+    # im = Image.fromarray(X[0])
+    # im.save("original.jpeg")
+    # im = Image.fromarray(overlap_tile_processing(X[0], 92, 92))
+    # im.save("augmentation.jpeg")
+
+
+    # Step 1. Overlap-tile for all image(include ground-truth images)
+    # processed_X = list()
+    # for per_img in X:
+    #     processed_X.append(overlap_tile_processing(per_img, 92, 92))
+    # # processed_X = np.array(processed_X)
+    #
+    # processed_Y = list()
+    # for per_img in Y:
+    #     processed_Y.append(overlap_tile_processing(per_img, 92, 92))
+    # # processed_Y = np.array(processed_Y)
+
+
+    # print(processed_X.shape)
+    # print(processed_Y.shape)
+    # save_variable_to_pickle(np.array(processed_X), 'processed_x')
+    # save_variable_to_pickle(np.array(processed_Y), 'processed_y')
+    # a, b = keras_data_augmentation(processed_X, processed_Y)
+    # print(a.shape)
+    # print(b.shape)

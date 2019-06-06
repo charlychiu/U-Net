@@ -24,6 +24,21 @@ Keras implementation of U-Net, with simple annotation
 ### Overlap-tile strategy *696x696*
 ![training-data-0](images/overlap-tile.jpg)
 
+### Patch Original
+![patch-original](images/patch-original.png)
+
+### Patch 1
+![patch-1](images/patch-1.png)
+
+### Patch 2
+![patch-2](images/patch-2.png)
+
+### Patch 3
+![patch-3](images/patch-3.png)
+
+### Patch 4
+![patch-4](images/patch-4.png)
+
 ## Model
 
 ```

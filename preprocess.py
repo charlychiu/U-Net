@@ -184,6 +184,21 @@ def data_generator(x, y, batch_size, epoch):
         if i >= epoch:
             return np.array(tmp_x), np.array(tmp_y)
 
+def split_image2_4patch(x, y):
+    processing_set = zip(x, y)
+    tmp_x = list()
+    tmp_y = list()
+    for (image, mask) in processing_set:
+        tmp_x.append(image[0:572, 0:572])
+        tmp_y.append(mask[0:572, 0:572])
+        tmp_x.append(image[0:572, 124:696])
+        tmp_y.append(mask[0:572, 124:696])
+        tmp_x.append(image[124:696, 0:572])
+        tmp_y.append(mask[124:696, 0:572])
+        tmp_x.append(image[124:696, 124:696])
+        tmp_y.append(mask[124:696, 124:696])
+    return np.array(tmp_x), np.array(tmp_y)
+
 if __name__ == '__main__':
     # In large scale data, do not save it as picture, cost large storage
     X, Y = get_ISBI_2012_dataset() # 30 pictures of microscope 
@@ -206,9 +221,17 @@ if __name__ == '__main__':
     
     X_2, Y_2 = data_generator(X_1, Y_1, 10, 10) ## total picture 10*10= 100
     print(X_2.shape)
-    print(Y_2.shape)
     # image_preview(X_2[0][:,:,0])
     # image_preview(Y_2[0][:,:,0])
+
+    # Third: Split to 4 patch
+    X_3, Y_3 = split_image2_4patch(X_2, Y_2)
+    print(X_3.shape)
+
+    # Last: Save to .npy file
+    np.save('train_X', X_3)
+    np.save('train_Y', Y_3)
+    print("Saved successfully")
 
     # X1, Y1 = get_DIC_C2DH_HeLa()
     # save_npy_array_to_picture(X1, './data/data2/x/')

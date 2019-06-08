@@ -4,6 +4,8 @@ from PIL import Image, ImageSequence
 import matplotlib.pyplot as plt
 import numpy as np
 from utils import *
+import cv2
+from keras.preprocessing.image import ImageDataGenerator
 
 DATA_PATH = './dataset/'
 
@@ -20,7 +22,6 @@ def load_from_multi_page_tiff(path_to_image):
         image_np_array_list.append(np.array(page_image))
     return np.stack(image_np_array_list)
 
-
 def load_from_single_page_tiff(path_to_image):
     """
     Convert image to array
@@ -29,7 +30,6 @@ def load_from_single_page_tiff(path_to_image):
     """
     return np.array(Image.open(path_to_image))
 
-
 def image_preview(np_array):
     """
     Preview image from np_array
@@ -37,7 +37,6 @@ def image_preview(np_array):
     """
     img = Image.fromarray(np_array)
     img.show()
-
 
 def image_preview_fit_its_scale(np_array):
     """
@@ -49,13 +48,11 @@ def image_preview_fit_its_scale(np_array):
     plt.colorbar()
     plt.show()
 
-
 def get_image_shape(np_array):
     if isinstance(np_array, (np.ndarray, np.generic)):
         print("Loaded data shape: {}".format(np_array.shape))
     else:
         print('Input type error!')
-
 
 def get_ISBI_2012_dataset():
     """
@@ -67,10 +64,8 @@ def get_ISBI_2012_dataset():
     get_image_shape(x_image_array)
     return x_image_array, y_image_array
 
-
 def seek_file_in_folder(folder_path):
     return [join(folder_path, f) for f in listdir(folder_path) if isfile(join(folder_path, f))]
-
 
 def get_DIC_C2DH_HeLa():
     """
@@ -82,7 +77,6 @@ def get_DIC_C2DH_HeLa():
     get_image_shape(x)
     return x, y
 
-
 def get_PhC_C2DH_U373():
     """
     get PhC C2DH U373 dataset where had ground truth data only
@@ -92,7 +86,6 @@ def get_PhC_C2DH_U373():
     x, y = parsing_cell_tracking_data(folder_path_list)
     get_image_shape(x)
     return x, y
-
 
 def parsing_cell_tracking_data(ground_truth_path):
     """
@@ -117,7 +110,6 @@ def parsing_cell_tracking_data(ground_truth_path):
         x_image_array += x_image
         y_image_array += y_image
     return np.stack(x_image_array), np.stack(y_image_array)
-
 
 def overlap_tile_processing(img_array, expend_px_width, expend_px_height):
     """
@@ -161,16 +153,62 @@ def overlap_tile_processing(img_array, expend_px_width, expend_px_height):
 
     return result_img
 
-if __name__ == '__main__':
-    X, Y = get_ISBI_2012_dataset()
-    from PIL import Image
-    for idx, each_picture in enumerate(X):
-        img = Image.fromarray(overlap_tile_processing(each_picture, 92, 92))
-        img.save('./data/data1/overlap-tile-x/' + str(idx) + ".png")
+def convert_to_datagen_format(py_list):
+    nparray = np.array(py_list)
+    return nparray.reshape(nparray.shape + (1,))
 
-    for idx, each_picture in enumerate(Y):
-        img = Image.fromarray(overlap_tile_processing(each_picture, 92, 92))
-        img.save('./data/data1/overlap-tile-y/' + str(idx) + ".png")
+def data_generator(x, y, batch_size, epoch):
+    '''
+    Set same seed for image_datagen & mask_datagen to ensure the transformation for image and mask is the same
+    '''
+    seed = 1
+    data_gen_args = dict(rotation_range=0.2,
+                     width_shift_range=0.05,
+                     height_shift_range=0.05,
+                     shear_range=0.05,
+                     zoom_range=0.05,
+                     horizontal_flip=True,
+                     fill_mode='nearest')
+    
+    datagen = ImageDataGenerator(**data_gen_args)
+
+    datagen_generator = datagen.flow(x, y, batch_size=batch_size, seed=seed)
+
+    tmp_x = list()
+    tmp_y = list()
+    i = 0
+    for batch_x, batch_y in datagen_generator:
+        tmp_x += list(batch_x)
+        tmp_y += list(batch_y)
+        i += 1
+        if i >= epoch:
+            return np.array(tmp_x), np.array(tmp_y)
+
+if __name__ == '__main__':
+    # In large scale data, do not save it as picture, cost large storage
+    X, Y = get_ISBI_2012_dataset() # 30 pictures of microscope 
+
+    # First: Over-tile strategy
+    X_1 = list()
+    Y_1 = list()
+    for idx, picture in enumerate(X):
+        X_1.append(overlap_tile_processing(picture, 92, 92))
+
+    for idx, picture in enumerate(Y):
+        Y_1.append(overlap_tile_processing(picture, 92, 92))
+
+    X_1 = convert_to_datagen_format(X_1)
+    Y_1 = convert_to_datagen_format(Y_1)
+    assert(X_1.shape == (30, 696, 696, 1)), "data loading error"
+    assert(Y_1.shape == (30, 696, 696, 1)), "data loading error"
+
+    # Second: Data Generator
+    
+    X_2, Y_2 = data_generator(X_1, Y_1, 10, 10) ## total picture 10*10= 100
+    print(X_2.shape)
+    print(Y_2.shape)
+    # image_preview(X_2[0][:,:,0])
+    # image_preview(Y_2[0][:,:,0])
 
     # X1, Y1 = get_DIC_C2DH_HeLa()
     # save_npy_array_to_picture(X1, './data/data2/x/')

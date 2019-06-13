@@ -313,58 +313,29 @@ def split_image2_4patch(x, y):
 
 if __name__ == '__main__':
 
-    aug = DataAug()
-    aug.augmentation()
-    # trains = np.load('train_wOLT_X.npy')
-    # labels = np.load('train_wOLT_Y.npy')
-    # print('Trains shape: ', trains.shape)
-    # print('Labels shape: ', labels.shape)
+    # aug = DataAug()
+    # aug.augmentation()
 
-    # # image_preview(trains[0][:,:,0])
-    # # image_preview(labels[0][:,:,0])
-    # image_save(trains[0][:,:,0], 'train.png')
-    # image_save(labels[0][:,:,0], 'label.png')
+    # dp = DataProcess()
+    # dp.create_training_data()
 
-    # aug_trains, aug_labels = augmentation(trains, labels)
-    # print('Aug Trains shape: ', aug_trains.shape)
-    # print('Aug Labels shape: ', aug_labels.shape)
-
-    dp = DataProcess()
-    dp.create_training_data()
-
-    # trains = np.load('data1/dataset/imgs_train.npy')
-    # labels = np.load('data1/dataset/imgs_mask_train.npy')
-    # print('Trains shape: ', trains.shape)
-    # print('Labels shape: ', labels.shape)
+    trains = np.load('data1/dataset/imgs_val.npy')
+    labels = np.load('data1/dataset/imgs_mask_val.npy')
+    print('Trains shape: ', trains.shape)
+    print('Labels shape: ', labels.shape)
     # image_save(trains[10][0,:,:], 'train.png')
     # image_save(labels[10][0,:,:], 'label.png')
 
-
-    # tmp = trains[:,0,:,:]
-    # tmp = tmp.reshape(tmp.shape + (1,))
-    # print(tmp.shape)
-
-    # np.save('data1/dataset/imgs_train1.npy', tmp)
-
-    # tmp = labels[:,0,:,:]
-    # tmp = tmp.reshape(tmp.shape + (1,))
-    # print(tmp.shape)
-    # np.save('data1/dataset/imgs_mask_train1.npy', tmp)
-
-    # trains = np.load('data1/dataset/imgs_train1.npy')
-    # labels = np.load('data1/dataset/imgs_mask_train1.npy')
-    # print('Trains shape: ', trains.shape)
-    # print('Labels shape: ', labels.shape)
+    trains = trains[:,0,:,:]
+    trains = trains.reshape(trains.shape + (1,))
+    labels = labels[:,0,:,:]
+    labels = labels.reshape(labels.shape + (1,))
+    print('Trains shape: ', trains.shape)
+    print('Labels shape: ', labels.shape)
 
     X, Y = split_image2_4patch(trains, labels)
     print('X shape: ', X.shape) # 572 x 572
     print('Y shape: ', Y.shape) # 388 x 388
 
-    # np.save('data1/dataset/imgs_train2.npy', X)
-    # np.save('data1/dataset/imgs_mask_train2.npy', Y)
-
-    # trains = np.load('data1/dataset/imgs_train2.npy')
-    # labels = np.load('data1/dataset/imgs_mask_train2.npy')
-
-    # np.save('data1/dataset/imgs_train_small.npy', X[:1000])
-    # np.save('data1/dataset/imgs_mask_train_small.npy', Y[:1000])
+    np.save('data1/dataset/imgs_val2.npy', X)
+    np.save('data1/dataset/imgs_mask_val2.npy', Y)
